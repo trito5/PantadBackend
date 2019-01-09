@@ -42,11 +42,9 @@ public class User {
     @Size(max = 100)
     private String password;
 
- 
-
     @NonNull
     @NotBlank
-    @Size(max = 15)
+    @Size(max = 40)
     private String username;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -54,6 +52,9 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @NonNull
+    private boolean isSchoolclass;
 
     public void addRoleToUser(Role role){
         roles.add(role);

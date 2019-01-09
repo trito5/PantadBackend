@@ -81,7 +81,7 @@ public class AuthController {
 
         // Creating user's account
         User user = new User(signUpUserRequest.getName(),
-                signUpUserRequest.getEmail(), signUpUserRequest.getPassword(), signUpUserRequest.getUsername());
+                signUpUserRequest.getEmail(), signUpUserRequest.getPassword(), signUpUserRequest.getUsername(), false);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -117,7 +117,7 @@ public class AuthController {
 
         // Creating user's account
         User user = new User(signUpClassRequest.getName(),
-                signUpClassRequest.getEmail(), signUpClassRequest.getPassword(), signUpClassRequest.getUsername());
+                signUpClassRequest.getEmail(), signUpClassRequest.getPassword(), signUpClassRequest.getUsername(), true);
 
         Schoolclass schoolclass = new Schoolclass(signUpClassRequest.getClassName(), signUpClassRequest.getSchool(), user);
 

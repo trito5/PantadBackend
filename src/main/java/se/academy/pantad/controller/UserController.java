@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import se.academy.pantad.repository.UserRepository;
+import se.academy.pantad.domain.User;
 import se.academy.pantad.payload.UserIdentityAvailability;
 import se.academy.pantad.payload.UserSummary;
+import se.academy.pantad.repository.UserRepository;
 import se.academy.pantad.security.CurrentUser;
 import se.academy.pantad.security.UserPrincipal;
 
@@ -26,7 +27,8 @@ public class UserController {
     @GetMapping("/user/me")
     @PreAuthorize("hasRole('USER')")
     public UserSummary getCurrentUser(@CurrentUser UserPrincipal currentUser) {
-        UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getName());
+        User user = userRepository.findByEmail(currentUser.getEmail()).get();
+        UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getName(), user.isSchoolclass());
         return userSummary;
     }
 

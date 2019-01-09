@@ -5,11 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.academy.pantad.domain.Pant;
 import se.academy.pantad.domain.User;
+import se.academy.pantad.payload.NewPantRequest;
 import se.academy.pantad.repository.PantRepository;
 import se.academy.pantad.repository.UserRepository;
 import se.academy.pantad.security.CurrentUser;
 import se.academy.pantad.security.UserPrincipal;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +30,9 @@ public class PantController {
 
     //Registrera ny pant
     @PostMapping("/newPant")
-    public ResponseEntity<?> registerPant(@RequestBody Pant pant, @CurrentUser UserPrincipal currentUser) {
+    public ResponseEntity<?> registerPant(@Valid @RequestBody NewPantRequest newPantRequest, @CurrentUser UserPrincipal currentUser) {
         User user = userRepository.findByEmail(currentUser.getEmail()).get();
+        Pant pant = new Pant(newPantRequest.getValue(), newPantRequest.getAddress(), newPantRequest.getLongitude(), newPantRequest.getLatitude(), false);
         pant.setUser(user);
         pantRepository.save(pant);
         return ResponseEntity.ok().build();

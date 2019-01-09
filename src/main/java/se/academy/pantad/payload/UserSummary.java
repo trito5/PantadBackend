@@ -10,5 +10,6 @@ public class UserSummary {
 
     private Long id;
     private String name;
+    private boolean isSchoolclass;
 
 }

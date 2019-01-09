@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 
 @Entity
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -20,17 +21,21 @@ public class Pant {
     private Long pantId;
     @NonNull
     private String value;
+    @NonNull
     private String address;
+    @NonNull
     private String longitude;
+    @NonNull
     private String latitude;
     @ManyToOne
     private User user;
     @ManyToOne
     private Schoolclass collectedByClassId;
+    @NonNull
     private boolean isCollected;
     private String collectInfo;
 
-    public Pant(@NonNull String value, String address, String longitude, String latitude,
+/*    public Pant(@NonNull String value, String address, String longitude, String latitude,
                 User user, String collectInfo) {
         this.value = value;
         this.address = address;
@@ -40,5 +45,5 @@ public class Pant {
         this.isCollected = false;
         this.collectInfo = collectInfo;
 
-    }
+    }*/
 }
