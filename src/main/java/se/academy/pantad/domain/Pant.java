@@ -33,6 +33,8 @@ public class Pant {
     private Schoolclass collectedClass;
     @NonNull
     private boolean isCollected;
+    @NonNull
+    private boolean isDeleted;
     private String collectInfo;
 
 /*    public Pant(@NonNull String value, String address, String longitude, String latitude,

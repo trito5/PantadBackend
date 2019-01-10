@@ -28,6 +28,7 @@ public class PantLoader implements CommandLineRunner {
 
         allPant.forEach(p -> {
             p.setCollected(false);
+            p.setDeleted(false);
             pantRepository.save(p);
         });
 
