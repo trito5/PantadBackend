@@ -11,8 +11,10 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewPantRequest {
+public class CollectedClassPantRequest {
 
+    @NotBlank
+    private Long id;
     @NotBlank
     private String value;
     @NotBlank
@@ -21,5 +23,6 @@ public class NewPantRequest {
     private String longitude;
     @NotBlank
     private String latitude;
+
 
 }

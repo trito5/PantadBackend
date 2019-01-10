@@ -30,7 +30,7 @@ public class Pant {
     @ManyToOne
     private User user;
     @ManyToOne
-    private Schoolclass collectedByClassId;
+    private Schoolclass collectedClass;
     @NonNull
     private boolean isCollected;
     private String collectInfo;

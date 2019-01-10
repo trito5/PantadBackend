@@ -1,14 +1,14 @@
-/*
 package se.academy.pantad.bootstrap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import se.academy.pantad.domain.Pant;
-import se.academy.pantad.domain.User;
 import se.academy.pantad.repository.PantRepository;
 import se.academy.pantad.repository.SchoolclassRepository;
 import se.academy.pantad.repository.UserRepository;
+
+import java.util.List;
 
 @Component
 public class PantLoader implements CommandLineRunner {
@@ -23,11 +23,17 @@ public class PantLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        User user = new User("hej@hotmail.com", "password", "Anders", "pantad");
-        userRepository.save(user);
-        Pant pant = new Pant("130", "Helgalunden 13", "45", "65", user, "Massa pant!");
-        pantRepository.save(pant);
+
+        List<Pant> allPant = pantRepository.findAll();
+
+        allPant.forEach(p -> {
+            p.setCollected(false);
+            pantRepository.save(p);
+        });
+
+
+
 
     }
 }
-*/
+

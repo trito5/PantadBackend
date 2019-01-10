@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.academy.pantad.domain.Pant;
+import se.academy.pantad.domain.Schoolclass;
 import se.academy.pantad.domain.User;
+import se.academy.pantad.payload.CollectedClassPantRequest;
 import se.academy.pantad.payload.NewPantRequest;
 import se.academy.pantad.repository.PantRepository;
+import se.academy.pantad.repository.SchoolclassRepository;
 import se.academy.pantad.repository.UserRepository;
 import se.academy.pantad.security.CurrentUser;
 import se.academy.pantad.security.UserPrincipal;
@@ -27,6 +30,9 @@ public class PantController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SchoolclassRepository schoolclassRepository;
+
 
     //Registrera ny pant
     @PostMapping("/newPant")
@@ -40,17 +46,37 @@ public class PantController {
 
     //Gör så att pant bli collected
     @GetMapping("/collectedPant/{pantId}")
-    public ResponseEntity<?> collectedPant(@PathVariable Long pantId) {
+    public ResponseEntity<?> collectedPant(@PathVariable Long pantId, @CurrentUser UserPrincipal currentUser) {
         Optional<Pant> pant = pantRepository.findById(pantId);
         if (pant.isPresent()) {
             Pant pantFound = pant.get();
             pantFound.setCollected(true);
+
+            Schoolclass schoolclass = schoolclassRepository.findByUserId(currentUser.getId()).get();
+            pantFound.setCollectedClass(schoolclass);
+
             Pant result = pantRepository.save(pantFound);
             return ResponseEntity.ok().body(result);
         } else {
             return ResponseEntity.badRequest().body(pantId + ": is not present");
         }
     }
+
+    @GetMapping("/collectedPant")
+    public List<CollectedClassPantRequest> getCollectedPant(@CurrentUser UserPrincipal currentUser){
+
+        Schoolclass schoolclass = schoolclassRepository.findByUserId(currentUser.getId()).get();
+
+        List<Pant> pantList = pantRepository.findByCollectedClassClassId(schoolclass.getClassId());
+        List<CollectedClassPantRequest> classPant = new ArrayList<>();
+
+        pantList.forEach(p -> {
+            classPant.add(new CollectedClassPantRequest(p.getPantId(), p.getValue(), p.getAddress(), p.getLongitude(), p.getLatitude()));
+        });
+
+        return classPant;
+    }
+
 
     //lista med all pant som inte är collected
     @GetMapping("/allPant")
