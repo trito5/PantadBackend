@@ -38,7 +38,9 @@ public class PantController {
     @PostMapping("/newPant")
     public ResponseEntity<?> registerPant(@Valid @RequestBody NewPantRequest newPantRequest, @CurrentUser UserPrincipal currentUser) {
         User user = userRepository.findByEmail(currentUser.getEmail()).get();
-        Pant pant = new Pant(newPantRequest.getValue(), newPantRequest.getAddress(), newPantRequest.getLongitude(), newPantRequest.getLatitude(), false, false);
+        String info = (newPantRequest.getCollectInfo().equals("") || newPantRequest.getCollectInfo() == null) ? "" : newPantRequest.getCollectInfo();
+        Pant pant = new Pant(newPantRequest.getValue(), newPantRequest.getAddress(), newPantRequest.getLongitude(), newPantRequest.getLatitude(),
+                newPantRequest.getPostalCode(), newPantRequest.getCity(), newPantRequest.getCollectTimeFrame(),false, false, info);
         pant.setUser(user);
         Pant result = pantRepository.save(pant);
         return ResponseEntity.ok().body(result);
@@ -83,6 +85,7 @@ public class PantController {
         if (pant.isPresent()){
             Pant pantFound = pant.get();
             pantFound.setCollected(false);
+            pantFound.setCollectedClass(null);
 
             Pant result = pantRepository.save(pantFound);
             return ResponseEntity.ok().body(result);

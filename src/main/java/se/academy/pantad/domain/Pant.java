@@ -27,6 +27,12 @@ public class Pant {
     private String longitude;
     @NonNull
     private String latitude;
+    @NonNull
+    private String postalCode;
+    @NonNull
+    private String city;
+    @NonNull
+    private String collectTimeFrame;
     @ManyToOne
     private User user;
     @ManyToOne
@@ -35,6 +41,7 @@ public class Pant {
     private boolean isCollected;
     @NonNull
     private boolean isDeleted;
+    @NonNull
     private String collectInfo;
 
 /*    public Pant(@NonNull String value, String address, String longitude, String latitude,

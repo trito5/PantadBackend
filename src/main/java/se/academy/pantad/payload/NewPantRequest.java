@@ -1,9 +1,6 @@
 package se.academy.pantad.payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 
@@ -21,5 +18,12 @@ public class NewPantRequest {
     private String longitude;
     @NotBlank
     private String latitude;
+    @NotBlank
+    private String postalCode;
+    @NotBlank
+    private String city;
+    @NotBlank
+    private String collectTimeFrame;
+    private String collectInfo;
 
 }
