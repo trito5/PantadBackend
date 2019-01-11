@@ -9,6 +9,8 @@ import java.util.List;
 public interface PantRepository extends JpaRepository<Pant, Long> {
     List<Pant> findByCollectedClassClassId(Long collectedClassClassId);
     List<Pant> findByUserId(Long userId);
+    List<Pant> findByUserIdAndIsDeleted(Long userId, boolean isDeleted);
+    List<Pant> findByIsDeletedAndIsCollected(boolean isDeleted, boolean isCollected);
 
     // Optional<Schoolclass> findByUserId(Long userId);
 }

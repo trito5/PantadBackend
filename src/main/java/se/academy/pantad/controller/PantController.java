@@ -113,13 +113,24 @@ public class PantController {
     //Hämta all pant som är lämnad av en viss användare
     @GetMapping("/getUserPant")
     public List<Pant>  getUserPant(@CurrentUser UserPrincipal currentUser) {
-        List<Pant> pantList = pantRepository.findByUserId(currentUser.getId());
+        List<Pant> pantList = pantRepository.findByUserIdAndIsDeleted(currentUser.getId(), false);
         return pantList;
+       /* List<Pant> pantList = pantRepository.findByUserId(currentUser.getId());
+        List<Pant> availablePant = new ArrayList<>();
+        pantList.forEach(p -> {
+            if (!p.isDeleted()) {
+                availablePant.add(p);
+            }
+        });
+        return availablePant;*/
     }
+
     //lista med all pant som inte är collected
     @GetMapping("/allPant")
     public List<Pant> getAllPant() {
-        List<Pant> pantList = pantRepository.findAll();
+        List<Pant> pantList = pantRepository.findByIsDeletedAndIsCollected(false, false);
+        return pantList;
+       /* List<Pant> pantList = pantRepository.findAll();
         List<Pant> availablePant = new ArrayList<>();
 
         pantList.forEach(p -> {
@@ -127,7 +138,7 @@ public class PantController {
                 availablePant.add(p);
             }
         });
-        return availablePant;
+        return availablePant;*/
     }
 
 }
