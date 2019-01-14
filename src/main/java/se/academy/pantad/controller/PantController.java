@@ -34,7 +34,7 @@ public class PantController {
     private SchoolclassRepository schoolclassRepository;
 
 
-    //Registrera ny pant
+    //En användare registrerar ny pant
     @PostMapping("/newPant")
     public ResponseEntity<?> registerPant(@Valid @RequestBody NewPantRequest newPantRequest, @CurrentUser UserPrincipal currentUser) {
         User user = userRepository.findByEmail(currentUser.getEmail()).get();
@@ -46,17 +46,15 @@ public class PantController {
         return ResponseEntity.ok().body(result);
     }
 
-    //Gör så att pant bli collected
+    //När skolklass väjer att hämta pant, så binds panten til aktuell skolklass samt markeras som isCollected
     @GetMapping("/collectedPant/{pantId}")
     public ResponseEntity<?> collectedPant(@PathVariable Long pantId, @CurrentUser UserPrincipal currentUser) {
         Optional<Pant> pant = pantRepository.findById(pantId);
         if (pant.isPresent()) {
             Pant pantFound = pant.get();
             pantFound.setCollected(true);
-
             Schoolclass schoolclass = schoolclassRepository.findByUserId(currentUser.getId()).get();
             pantFound.setCollectedClass(schoolclass);
-
             Pant result = pantRepository.save(pantFound);
             return ResponseEntity.ok().body(result);
         } else {
@@ -64,7 +62,7 @@ public class PantController {
         }
     }
 
-    //Användare deletar en pant
+    //Användare tar bort en pant. Då markeras den som isDeleted i databasen.
     @GetMapping("/deletePant/{pantId}")
     public ResponseEntity<?> deletePant(@PathVariable Long pantId){
         Optional<Pant> pant = pantRepository.findById(pantId);
@@ -78,7 +76,7 @@ public class PantController {
         }
     }
 
-    //Gör så att pant blir uncollected
+    //När en skolklass ångrar en hämtning av pant.
     @GetMapping ("/unCollectPant/{pantId}")
     public ResponseEntity<?> unCollectPant (@PathVariable Long pantId){
         Optional<Pant> pant = pantRepository.findById(pantId);
@@ -94,7 +92,7 @@ public class PantController {
         }
     }
 
-    //Hämta all pant som är collectad av en viss klass
+    //Hämta all pant som är hämtad av en viss klass
     @GetMapping("/collectedPant")
     public List<CollectedClassPantRequest> getCollectedPant(@CurrentUser UserPrincipal currentUser){
 
@@ -104,41 +102,24 @@ public class PantController {
         List<CollectedClassPantRequest> classPant = new ArrayList<>();
 
         pantList.forEach(p -> {
-            classPant.add(new CollectedClassPantRequest(p.getPantId(), p.getValue(), p.getAddress(), p.getLongitude(), p.getLatitude()));
+            classPant.add(new CollectedClassPantRequest(p.getPantId(), p.getValue(), p.getAddress(), p.getLongitude(), p.getLatitude(), p.getCollectTimeFrame(), p.getCollectInfo()));
         });
 
         return classPant;
     }
 
-    //Hämta all pant som är lämnad av en viss användare
+    //Hämta all pant som är lämnad av en viss användare.
     @GetMapping("/getUserPant")
     public List<Pant>  getUserPant(@CurrentUser UserPrincipal currentUser) {
         List<Pant> pantList = pantRepository.findByUserIdAndIsDeleted(currentUser.getId(), false);
         return pantList;
-       /* List<Pant> pantList = pantRepository.findByUserId(currentUser.getId());
-        List<Pant> availablePant = new ArrayList<>();
-        pantList.forEach(p -> {
-            if (!p.isDeleted()) {
-                availablePant.add(p);
-            }
-        });
-        return availablePant;*/
     }
 
-    //lista med all pant som inte är collected
+    //lista med all pant som inte är hämtad.
     @GetMapping("/allPant")
     public List<Pant> getAllPant() {
         List<Pant> pantList = pantRepository.findByIsDeletedAndIsCollected(false, false);
         return pantList;
-       /* List<Pant> pantList = pantRepository.findAll();
-        List<Pant> availablePant = new ArrayList<>();
-
-        pantList.forEach(p -> {
-            if (!p.isCollected() && !p.isDeleted()) {
-                availablePant.add(p);
-            }
-        });
-        return availablePant;*/
     }
 
 }

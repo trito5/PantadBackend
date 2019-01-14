@@ -23,6 +23,10 @@ public class CollectedClassPantRequest {
     private String longitude;
     @NotBlank
     private String latitude;
+    @NotBlank
+    private String collectTimeFrame;
+    @NotBlank
+    private String collectInfo;
 
 
 }

@@ -50,6 +50,7 @@ public class AuthController {
     @Autowired
     JwtTokenProvider tokenProvider;
 
+    //Inloggning för användare och skolklass.
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -66,6 +67,7 @@ public class AuthController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
+    //Registrering av en användare
     @PostMapping("/signupUser")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpUserRequest signUpUserRequest) {
 
@@ -79,60 +81,41 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
 
-        // Creating user's account
         User user = new User(signUpUserRequest.getName(),
                 signUpUserRequest.getEmail(), signUpUserRequest.getPassword(), signUpUserRequest.getUsername(), false);
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
                 .orElseThrow(() -> new AppException("User Role not set."));
-
         user.setRoles(Collections.singleton(userRole));
-
         User result = userRepository.save(user);
-
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
                 .buildAndExpand(result.getUsername()).toUri();
-
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
     }
 
+    //Registrera en skolklass.
     @PostMapping("/signupClass")
     public ResponseEntity<?> registerClass(@Valid @RequestBody SignUpClassRequest signUpClassRequest) {
         if(userRepository.existsByUsername(signUpClassRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
         }
-
-
         if(userRepository.existsByEmail(signUpClassRequest.getEmail())) {
             return new ResponseEntity(new ApiResponse(false, "Email Address already in use!"),
                     HttpStatus.BAD_REQUEST);
         }
-        // Creating a class
 
-
-
-        // Creating user's account
         User user = new User(signUpClassRequest.getName(),
                 signUpClassRequest.getEmail(), signUpClassRequest.getPassword(), signUpClassRequest.getUsername(), true);
-
         Schoolclass schoolclass = new Schoolclass(signUpClassRequest.getClassName(), signUpClassRequest.getSchool(), user);
-
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
                 .orElseThrow(() -> new AppException("User Role not set."));
-
         user.setRoles(Collections.singleton(userRole));
-
         schoolclass.setUser(user);
         User result = userRepository.save(user);
         schoolclassRepository.save(schoolclass);
-
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
                 .buildAndExpand(result.getUsername()).toUri();
