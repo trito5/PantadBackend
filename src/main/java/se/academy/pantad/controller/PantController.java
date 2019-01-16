@@ -102,7 +102,8 @@ public class PantController {
         List<CollectedClassPantRequest> classPant = new ArrayList<>();
 
         pantList.forEach(p -> {
-            classPant.add(new CollectedClassPantRequest(p.getPantId(), p.getValue(), p.getAddress(), p.getLongitude(), p.getLatitude(), p.getCollectTimeFrame(), p.getCollectInfo()));
+            User user = p.getUser();
+            classPant.add(new CollectedClassPantRequest(p.getPantId(), p.getValue(), p.getAddress(), p.getPostalCode(), p.getCity(), p.getLongitude(), p.getLatitude(), p.getCollectTimeFrame(), p.getCollectInfo(), user.getEmail(), user.getName()));
         });
 
         return classPant;

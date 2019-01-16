@@ -20,6 +20,10 @@ public class CollectedClassPantRequest {
     @NotBlank
     private String address;
     @NotBlank
+    private String postalCode;
+    @NotBlank
+    private String city;
+    @NotBlank
     private String longitude;
     @NotBlank
     private String latitude;
@@ -27,6 +31,10 @@ public class CollectedClassPantRequest {
     private String collectTimeFrame;
     @NotBlank
     private String collectInfo;
+    @NotBlank
+    private String userEmail;
+    @NotBlank
+    private String userName;
 
 
 }
