@@ -77,6 +77,39 @@ public class PantController {
         }
     }
 
+    @GetMapping("/doneCollecting/{pantId}")
+    public ResponseEntity<?> doneCollecting(@PathVariable Long pantId, @CurrentUser UserPrincipal currentUser){
+        Optional<Schoolclass> schoolclass = schoolclassRepository.findByUserId(currentUser.getId());
+
+        if (schoolclass.isPresent()){
+            Schoolclass schoolclassFound = schoolclass.get();
+            Optional<Pant> pant = pantRepository.findByCollectedClassClassIdAndPantId(schoolclassFound.getClassId(), pantId);
+            if (pant.isPresent()){
+                Pant pantFound = pant.get();
+                pantFound.setDeleted(true);
+                return ResponseEntity.ok().body(new ResponseStatus("Pant done collecting"));
+            }
+        }
+        return ResponseEntity.badRequest().body(new ResponseStatus("Pant not found"));
+    }
+
+    //Hämta all pant som är hämtad av en viss klass
+    @GetMapping("/collectedPant")
+    public List<CollectedClassPantRequest> getCollectedPant(@CurrentUser UserPrincipal currentUser){
+
+        Schoolclass schoolclass = schoolclassRepository.findByUserId(currentUser.getId()).get();
+
+        List<Pant> pantList = pantRepository.findByCollectedClassClassIdAndIsDeleted(schoolclass.getClassId(), false);
+        List<CollectedClassPantRequest> classPant = new ArrayList<>();
+
+        pantList.forEach(p -> {
+            User user = p.getUser();
+            classPant.add(new CollectedClassPantRequest(p.getPantId(), p.getValue(), p.getAddress(), p.getPostalCode(), p.getCity(), p.getLongitude(), p.getLatitude(), p.getCollectTimeFrame(), p.getCollectInfo(), user.getEmail(), user.getName()));
+        });
+
+        return classPant;
+    }
+
     //När en skolklass ångrar en hämtning av pant.
     @GetMapping ("/unCollectPant/{pantId}")
     public ResponseEntity<?> unCollectPant (@PathVariable Long pantId){
@@ -90,23 +123,6 @@ public class PantController {
         } else {
             return ResponseEntity.badRequest().body(new ResponseStatus("Pant is not present"));
         }
-    }
-
-    //Hämta all pant som är hämtad av en viss klass
-    @GetMapping("/collectedPant")
-    public List<CollectedClassPantRequest> getCollectedPant(@CurrentUser UserPrincipal currentUser){
-
-        Schoolclass schoolclass = schoolclassRepository.findByUserId(currentUser.getId()).get();
-
-        List<Pant> pantList = pantRepository.findByCollectedClassClassId(schoolclass.getClassId());
-        List<CollectedClassPantRequest> classPant = new ArrayList<>();
-
-        pantList.forEach(p -> {
-            User user = p.getUser();
-            classPant.add(new CollectedClassPantRequest(p.getPantId(), p.getValue(), p.getAddress(), p.getPostalCode(), p.getCity(), p.getLongitude(), p.getLatitude(), p.getCollectTimeFrame(), p.getCollectInfo(), user.getEmail(), user.getName()));
-        });
-
-        return classPant;
     }
 
     //Hämta all pant som är lämnad av en viss användare.
