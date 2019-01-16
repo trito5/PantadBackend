@@ -8,6 +8,7 @@ import se.academy.pantad.domain.Schoolclass;
 import se.academy.pantad.domain.User;
 import se.academy.pantad.payload.CollectedClassPantRequest;
 import se.academy.pantad.payload.NewPantRequest;
+import se.academy.pantad.payload.ResponseStatus;
 import se.academy.pantad.repository.PantRepository;
 import se.academy.pantad.repository.SchoolclassRepository;
 import se.academy.pantad.repository.UserRepository;
@@ -42,11 +43,11 @@ public class PantController {
         Pant pant = new Pant(newPantRequest.getValue(), newPantRequest.getAddress(), newPantRequest.getLongitude(), newPantRequest.getLatitude(),
                 newPantRequest.getPostalCode(), newPantRequest.getCity(), newPantRequest.getCollectTimeFrame(),false, false, info);
         pant.setUser(user);
-        Pant result = pantRepository.save(pant);
-        return ResponseEntity.ok().body(result);
+        pantRepository.save(pant);
+        return ResponseEntity.ok().body(new ResponseStatus("Pant added"));
     }
 
-    //När skolklass väjer att hämta pant, så binds panten til aktuell skolklass samt markeras som isCollected
+    //När skolklass väljer att hämta pant, så binds panten till aktuell skolklass samt markeras som isCollected
     @GetMapping("/collectedPant/{pantId}")
     public ResponseEntity<?> collectedPant(@PathVariable Long pantId, @CurrentUser UserPrincipal currentUser) {
         Optional<Pant> pant = pantRepository.findById(pantId);
@@ -55,10 +56,10 @@ public class PantController {
             pantFound.setCollected(true);
             Schoolclass schoolclass = schoolclassRepository.findByUserId(currentUser.getId()).get();
             pantFound.setCollectedClass(schoolclass);
-            Pant result = pantRepository.save(pantFound);
-            return ResponseEntity.ok().body(result);
+            pantRepository.save(pantFound);
+            return ResponseEntity.ok().body(new ResponseStatus("Pant collected"));
         } else {
-            return ResponseEntity.badRequest().body(pantId + ": is not present");
+            return ResponseEntity.badRequest().body(new ResponseStatus( "PantId: " +pantId +" is not found"));
         }
     }
 
@@ -69,10 +70,10 @@ public class PantController {
         if(pant.isPresent()){
             Pant pantFound = pant.get();
             pantFound.setDeleted(true);
-            Pant result = pantRepository.save(pantFound);
-            return ResponseEntity.ok().body(result);
+            pantRepository.save(pantFound);
+            return ResponseEntity.ok().body(new ResponseStatus("Pant deleted"));
         } else {
-            return ResponseEntity.badRequest().body(pantId + ": is not present");
+            return ResponseEntity.badRequest().body(new ResponseStatus( "PantId: " +pantId +" is not found"));
         }
     }
 
@@ -84,11 +85,10 @@ public class PantController {
             Pant pantFound = pant.get();
             pantFound.setCollected(false);
             pantFound.setCollectedClass(null);
-
-            Pant result = pantRepository.save(pantFound);
-            return ResponseEntity.ok().body(result);
+            pantRepository.save(pantFound);
+            return ResponseEntity.ok().body(new ResponseStatus("Pant unCollected"));
         } else {
-            return ResponseEntity.badRequest().body(pantId + ": is not present");
+            return ResponseEntity.badRequest().body(new ResponseStatus("Pant is not present"));
         }
     }
 
